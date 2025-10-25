@@ -2,47 +2,34 @@
 
 .emdash-highlight {
   position: relative;
-  display: inline;
-  padding: 2px 4px;
-  border-radius: 3px;
+  display: inline-block;
+  padding: 2px 6px;
+  margin: 0 2px;
+  border-radius: 4px;
   transition: all 0.3s ease;
   
-  /* Gradient background with fade effect - horizontal fade from edges to center */
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(255, 77, 77, 0.1) 15%,
-    rgba(255, 77, 77, 0.3) 35%,
-    rgba(255, 77, 77, 0.4) 50%,
-    rgba(255, 77, 77, 0.3) 65%,
-    rgba(255, 77, 77, 0.1) 85%,
-    transparent 100%
-  );
+  /* Solid center with fade effect using box-shadow */
+  background: rgba(255, 77, 77, 0.35);
   
-  /* Subtle glow effect */
+  /* Glow effect that creates the fade */
   box-shadow: 
-    0 0 8px rgba(255, 77, 77, 0.2),
-    0 0 3px rgba(255, 77, 77, 0.3);
+    0 0 15px 8px rgba(255, 77, 77, 0.25),
+    0 0 8px 4px rgba(255, 77, 77, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
 }
 
 /* Ensure text remains readable */
 .emdash-highlight {
-  color: inherit;
+  color: #fff;
+  font-weight: 500;
 }
 
 /* Optional hover effect for interactivity */
 .emdash-highlight:hover {
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(255, 77, 77, 0.15) 15%,
-    rgba(255, 77, 77, 0.4) 35%,
-    rgba(255, 77, 77, 0.5) 50%,
-    rgba(255, 77, 77, 0.4) 65%,
-    rgba(255, 77, 77, 0.15) 85%,
-    transparent 100%
-  );
+  background: rgba(255, 77, 77, 0.5);
   box-shadow: 
-    0 0 12px rgba(255, 77, 77, 0.3),
-    0 0 5px rgba(255, 77, 77, 0.4);
+    0 0 20px 10px rgba(255, 77, 77, 0.35),
+    0 0 10px 5px rgba(255, 77, 77, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
 }

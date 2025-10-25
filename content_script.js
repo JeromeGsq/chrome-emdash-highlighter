@@ -9,12 +9,13 @@
 
   // Class name to apply to highlighted spans
   const HIGHLIGHT_CLASS = 'emdash-highlight';
-  
+
   // Marker attribute to identify already processed nodes
   const PROCESSED_ATTR = 'data-emdash-processed';
 
   // Number of characters to include in the fade effect (before and after)
-  const FADE_CHARS = 5;
+  // Set to 0 to highlight only the em-dash itself
+  const FADE_CHARS = 0;
 
   // Elements to skip during traversal
   const EXCLUDED_ELEMENTS = new Set([
@@ -32,17 +33,14 @@
    */
   function shouldExcludeElement(element) {
     if (!element) return true;
-    
+
     let current = element;
     while (current && current !== document.body) {
       if (EXCLUDED_ELEMENTS.has(current.nodeName)) {
         return true;
       }
       // Skip if already inside a highlighted span
-      if (
-        current.classList &&
-        current.classList.contains(HIGHLIGHT_CLASS)
-      ) {
+      if (current.classList && current.classList.contains(HIGHLIGHT_CLASS)) {
         return true;
       }
       current = current.parentElement;
