@@ -1,0 +1,13 @@
+/* EMDash Highlighter Styles */
+
+.emdash-highlight {
+  background-color: #ff4d4d !important;
+  padding: 2px 4px !important;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+/* Ensure text remains readable */
+.emdash-highlight {
+  color: inherit;
+}

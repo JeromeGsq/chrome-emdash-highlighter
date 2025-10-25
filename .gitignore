@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.log
+*.tmp
+
+# Extension package
+*.zip
+*.crx
+*.pem
+
+# Plan file
+*.plan.md
+
