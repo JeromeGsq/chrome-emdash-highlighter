@@ -1,17 +1,14 @@
 // EMDash Highlighter Content Script
-// Detects em-dashes (—) and applies a fade effect around them
+// Detects em-dashes (—) and highlights the containing block-level line with fade effect
 
 (function () {
   'use strict';
 
   // Em-dash detection pattern: U+2014 (—) only
-  const EMDASH_PATTERN = /\u2014/g;
+  const EMDASH_PATTERN = /\u2014/;
 
-  // Class name to apply to highlighted spans
+  // Class name to apply to highlighted elements
   const HIGHLIGHT_CLASS = 'emdash-highlight';
-
-  // Number of characters to include in the fade effect (before and after)
-  const FADE_CHARS = 5;
 
   // Elements to skip during traversal
   const EXCLUDED_ELEMENTS = new Set([
@@ -24,11 +21,32 @@
     'SVG',
   ]);
 
-  // Set to track already processed text nodes
-  const processedNodes = new WeakSet();
-
-  // Reference to the mutation observer (to disconnect during our own changes)
-  let mutationObserver = null;
+  // Block-level elements to consider as "lines"
+  const BLOCK_ELEMENTS = new Set([
+    'P',
+    'DIV',
+    'LI',
+    'BLOCKQUOTE',
+    'TD',
+    'TH',
+    'H1',
+    'H2',
+    'H3',
+    'H4',
+    'H5',
+    'H6',
+    'ARTICLE',
+    'SECTION',
+    'HEADER',
+    'FOOTER',
+    'NAV',
+    'ASIDE',
+    'DD',
+    'DT',
+    'FIGCAPTION',
+    'FIGURE',
+    'ADDRESS',
+  ]);
 
   /**
    * Check if an element or its ancestors should be excluded from processing
@@ -39,102 +57,66 @@
       if (EXCLUDED_ELEMENTS.has(current.nodeName)) {
         return true;
       }
-      // Skip if already inside a highlighted span to avoid infinite loops
-      if (
-        current.classList &&
-        current.classList.contains(HIGHLIGHT_CLASS)
-      ) {
-        return true;
-      }
       current = current.parentElement;
     }
     return false;
   }
 
   /**
-   * Process a text node to wrap em-dashes with fade effect
+   * Find the closest block-level ancestor of a node
    */
-  function processTextNode(textNode) {
-    // Skip if already processed
-    if (processedNodes.has(textNode)) {
-      return;
+  function findClosestBlockAncestor(node) {
+    let current = node.nodeType === Node.TEXT_NODE ? node.parentElement : node;
+
+    while (current && current !== document.body) {
+      // Check if already highlighted to avoid duplicates
+      if (current.classList && current.classList.contains(HIGHLIGHT_CLASS)) {
+        return null;
+      }
+
+      // Check if it's a known block-level element
+      if (BLOCK_ELEMENTS.has(current.nodeName)) {
+        return current;
+      }
+
+      // Check computed style for block-level display
+      if (current.nodeType === Node.ELEMENT_NODE) {
+        const display = window.getComputedStyle(current).display;
+        if (
+          display === 'block' ||
+          display === 'list-item' ||
+          display === 'table-cell' ||
+          display === 'table-row'
+        ) {
+          return current;
+        }
+      }
+
+      current = current.parentElement;
     }
 
+    return null;
+  }
+
+  /**
+   * Process a text node to check for em-dashes
+   */
+  function processTextNode(textNode) {
     // Skip if excluded element
     if (shouldExcludeElement(textNode.parentElement)) {
       return;
     }
 
     // Check if text contains em-dash
-    const text = textNode.textContent;
-    if (!EMDASH_PATTERN.test(text)) {
+    if (!EMDASH_PATTERN.test(textNode.textContent)) {
       return;
     }
 
-    // Reset regex lastIndex
-    EMDASH_PATTERN.lastIndex = 0;
-
-    // Find all em-dashes in the text
-    const matches = [];
-    let match;
-    while ((match = EMDASH_PATTERN.exec(text)) !== null) {
-      matches.push(match.index);
-    }
-
-    if (matches.length === 0) {
-      return;
-    }
-
-    // Mark as processed
-    processedNodes.add(textNode);
-
-    // Temporarily disconnect observer to avoid triggering on our own changes
-    if (mutationObserver) {
-      mutationObserver.disconnect();
-    }
-
-    try {
-      // Create a document fragment to hold the new nodes
-      const fragment = document.createDocumentFragment();
-      let lastIndex = 0;
-
-      matches.forEach((emdashIndex) => {
-        // Calculate the range to highlight (5 chars before and after)
-        const startIndex = Math.max(0, emdashIndex - FADE_CHARS);
-        const endIndex = Math.min(text.length, emdashIndex + 1 + FADE_CHARS);
-
-        // Add text before the highlighted section
-        if (startIndex > lastIndex) {
-          fragment.appendChild(
-            document.createTextNode(text.substring(lastIndex, startIndex))
-          );
-        }
-
-        // Create span for the highlighted section
-        const span = document.createElement('span');
-        span.className = HIGHLIGHT_CLASS;
-        span.textContent = text.substring(startIndex, endIndex);
-        fragment.appendChild(span);
-
-        lastIndex = endIndex;
-      });
-
-      // Add remaining text after the last match
-      if (lastIndex < text.length) {
-        fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
-      }
-
-      // Replace the text node with the fragment
-      textNode.parentNode.replaceChild(fragment, textNode);
-    } finally {
-      // Reconnect observer
-      if (mutationObserver) {
-        mutationObserver.observe(document.body, {
-          childList: true,
-          subtree: true,
-          characterData: true,
-        });
-      }
+    // Find closest block ancestor
+    const blockElement = findClosestBlockAncestor(textNode);
+    if (blockElement && blockElement.classList) {
+      // Add highlight class
+      blockElement.classList.add(HIGHLIGHT_CLASS);
     }
   }
 
@@ -166,18 +148,11 @@
     scanForEmDashes(document.body);
 
     // Set up MutationObserver for dynamic content
-    mutationObserver = new MutationObserver(function (mutations) {
+    const observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
         // Process added nodes
         mutation.addedNodes.forEach(function (node) {
           if (node.nodeType === Node.ELEMENT_NODE) {
-            // Skip if it's a highlight span or inside one
-            if (
-              node.classList &&
-              node.classList.contains(HIGHLIGHT_CLASS)
-            ) {
-              return;
-            }
             // Scan the entire subtree of added element
             scanForEmDashes(node);
           } else if (node.nodeType === Node.TEXT_NODE) {
@@ -197,7 +172,7 @@
     });
 
     // Start observing the document for changes
-    mutationObserver.observe(document.body, {
+    observer.observe(document.body, {
       childList: true,
       subtree: true,
       characterData: true,
