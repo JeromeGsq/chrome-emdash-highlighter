@@ -1,10 +1,20 @@
 /* EMDash Highlighter Styles */
 
 .emdash-highlight {
-  background-color: #ff4d4d !important;
-  padding: 2px 4px !important;
-  border-radius: 2px;
-  transition: background-color 0.2s ease;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 77, 77, 0.15) 20%,
+    rgba(255, 77, 77, 0.4) 40%,
+    rgba(255, 77, 77, 0.5) 50%,
+    rgba(255, 77, 77, 0.4) 60%,
+    rgba(255, 77, 77, 0.15) 80%,
+    transparent 100%
+  );
+  padding: 2px 0;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+  display: inline;
 }
 
 /* Ensure text remains readable */
