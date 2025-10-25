@@ -43,6 +43,17 @@
       if (current.classList && current.classList.contains(HIGHLIGHT_CLASS)) {
         return true;
       }
+      // Skip contenteditable elements (chat boxes, rich text editors)
+      if (current.isContentEditable || current.contentEditable === 'true') {
+        return true;
+      }
+      // Skip if element has certain attributes that indicate it's an input area
+      if (current.getAttribute && (
+        current.getAttribute('contenteditable') === 'true' ||
+        current.getAttribute('role') === 'textbox'
+      )) {
+        return true;
+      }
       current = current.parentElement;
     }
     return false;
@@ -121,9 +132,13 @@
 
     // Replace the text node with the fragment
     try {
+      // Additional safety check before replacement
+      if (!textNode.parentNode || !textNode.parentNode.replaceChild) {
+        return;
+      }
       textNode.parentNode.replaceChild(fragment, textNode);
     } catch (e) {
-      // Silently fail if DOM manipulation fails
+      // Silently fail if DOM manipulation fails (e.g., React controlled components)
       console.debug('EMDash Highlighter: Failed to process node', e);
     }
   }
@@ -168,7 +183,11 @@
    */
   function initialize() {
     // Scan the entire document initially
-    scanForEmDashes(document.body);
+    try {
+      scanForEmDashes(document.body);
+    } catch (e) {
+      console.debug('EMDash Highlighter: Initial scan failed', e);
+    }
 
     // Set up MutationObserver for dynamic content
     const observer = new MutationObserver(function (mutations) {
@@ -177,6 +196,14 @@
         if (
           mutation.target.classList &&
           mutation.target.classList.contains(HIGHLIGHT_CLASS)
+        ) {
+          return;
+        }
+
+        // Skip mutations in contenteditable areas
+        if (
+          mutation.target.isContentEditable ||
+          mutation.target.contentEditable === 'true'
         ) {
           return;
         }
@@ -192,12 +219,17 @@
             return;
           }
 
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            // Scan the entire subtree of added element
-            scanForEmDashes(node);
-          } else if (node.nodeType === Node.TEXT_NODE) {
-            // Process single text node
-            processTextNode(node);
+          try {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              // Scan the entire subtree of added element
+              scanForEmDashes(node);
+            } else if (node.nodeType === Node.TEXT_NODE) {
+              // Process single text node
+              processTextNode(node);
+            }
+          } catch (e) {
+            // Silently ignore errors during mutation processing
+            console.debug('EMDash Highlighter: Mutation processing failed', e);
           }
         });
       });
