@@ -1,6 +1,6 @@
 # EMDash Highlighter - Chrome Extension
 
-Extension Chrome qui surligne en rouge les lignes contenant des em-dashes (—, –, --).
+Extension Chrome qui surligne en rouge les lignes contenant des em-dashes (—).
 
 ## Installation
 
@@ -11,7 +11,7 @@ Extension Chrome qui surligne en rouge les lignes contenant des em-dashes (—, 
 
 ## Fonctionnalités
 
-- Détecte automatiquement les em-dashes (—), en-dashes (–) et double tirets (--)
+- Détecte automatiquement les em-dashes (—) uniquement
 - Surligne la ligne entière (élément bloc) en rouge
 - Gère le contenu dynamique (AJAX, SPA)
 - Aucune donnée envoyée à l'extérieur

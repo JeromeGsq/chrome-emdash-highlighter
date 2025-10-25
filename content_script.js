@@ -1,11 +1,11 @@
 // EMDash Highlighter Content Script
-// Detects em-dashes (—, –, --) and highlights the containing block-level line
+// Detects em-dashes (—) and highlights the containing block-level line
 
 (function () {
   'use strict';
 
-  // Em-dash detection pattern: U+2014 (—), U+2013 (–), or double dash (--)
-  const EMDASH_PATTERN = /[\u2014\u2013]|--/;
+  // Em-dash detection pattern: U+2014 (—) only
+  const EMDASH_PATTERN = /\u2014/;
 
   // Class name to apply to highlighted elements
   const HIGHLIGHT_CLASS = 'emdash-highlight';
