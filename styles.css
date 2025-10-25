@@ -4,13 +4,28 @@
   display: inline-block;
   padding: 2px 6px;
   border-radius: 3px;
+  transition: all 0.3s ease;
   
   /* Solid red background */
-  background: rgba(255, 77, 77, 0.5);
+  background: rgba(255, 77, 77, 0.4);
+  
+  /* Glow effect that creates the fade - without border/outline */
+  box-shadow: 
+    0 0 15px 8px rgba(255, 77, 77, 0.25),
+    0 0 8px 4px rgba(255, 77, 77, 0.3);
 }
 
 /* Ensure text remains readable */
 .emdash-highlight {
   color: #fff;
   font-weight: 500;
+}
+
+/* Optional hover effect for interactivity */
+.emdash-highlight:hover {
+  background: rgba(255, 77, 77, 0.5);
+  box-shadow: 
+    0 0 20px 10px rgba(255, 77, 77, 0.35),
+    0 0 10px 5px rgba(255, 77, 77, 0.4);
+  transform: scale(1.05);
 }
