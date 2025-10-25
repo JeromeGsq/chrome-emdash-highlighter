@@ -9,23 +9,22 @@
   /* Solid red background */
   background: rgba(255, 77, 77, 0.4);
   
-  /* Glow effect that creates the fade - without border/outline */
+  /* Glow effect - stronger horizontally, weaker vertically */
   box-shadow: 
-    0 0 15px 8px rgba(255, 77, 77, 0.25),
-    0 0 8px 4px rgba(255, 77, 77, 0.3);
+    0 0 20px 12px rgba(255, 77, 77, 0.2),
+    0 0 10px 6px rgba(255, 77, 77, 0.25);
 }
 
-/* Ensure text remains readable */
+/* Keep original text color */
 .emdash-highlight {
-  color: #fff;
-  font-weight: 500;
+  color: inherit;
 }
 
 /* Optional hover effect for interactivity */
 .emdash-highlight:hover {
   background: rgba(255, 77, 77, 0.5);
   box-shadow: 
-    0 0 20px 10px rgba(255, 77, 77, 0.35),
-    0 0 10px 5px rgba(255, 77, 77, 0.4);
+    0 0 25px 15px rgba(255, 77, 77, 0.25),
+    0 0 12px 8px rgba(255, 77, 77, 0.3);
   transform: scale(1.05);
 }

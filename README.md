@@ -13,8 +13,8 @@ Extension Chrome qui surligne les lignes contenant des em-dashes (—) avec un e
 
 - Détecte automatiquement les em-dashes (—) uniquement
 - Applique un fond rouge avec effet glow uniquement sur l'em-dash
-- L'em-dash devient blanc sur fond rouge pour plus de visibilité
-- Effet de rayonnement lumineux autour du caractère
+- Conserve la couleur originale du texte
+- Effet de rayonnement horizontal (glow vertical réduit)
 - Effet hover avec animation scale
 - Gère le contenu dynamique (AJAX, SPA)
 - Aucune donnée envoyée à l'extérieur
