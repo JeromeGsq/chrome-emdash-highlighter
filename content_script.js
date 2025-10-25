@@ -27,6 +27,9 @@
   // Set to track already processed text nodes
   const processedNodes = new WeakSet();
 
+  // Reference to the mutation observer (to disconnect during our own changes)
+  let mutationObserver = null;
+
   /**
    * Check if an element or its ancestors should be excluded from processing
    */
@@ -34,6 +37,13 @@
     let current = element;
     while (current && current !== document.body) {
       if (EXCLUDED_ELEMENTS.has(current.nodeName)) {
+        return true;
+      }
+      // Skip if already inside a highlighted span to avoid infinite loops
+      if (
+        current.classList &&
+        current.classList.contains(HIGHLIGHT_CLASS)
+      ) {
         return true;
       }
       current = current.parentElement;
@@ -78,38 +88,54 @@
     // Mark as processed
     processedNodes.add(textNode);
 
-    // Create a document fragment to hold the new nodes
-    const fragment = document.createDocumentFragment();
-    let lastIndex = 0;
-
-    matches.forEach((emdashIndex) => {
-      // Calculate the range to highlight (5 chars before and after)
-      const startIndex = Math.max(0, emdashIndex - FADE_CHARS);
-      const endIndex = Math.min(text.length, emdashIndex + 1 + FADE_CHARS);
-
-      // Add text before the highlighted section
-      if (startIndex > lastIndex) {
-        fragment.appendChild(
-          document.createTextNode(text.substring(lastIndex, startIndex))
-        );
-      }
-
-      // Create span for the highlighted section
-      const span = document.createElement('span');
-      span.className = HIGHLIGHT_CLASS;
-      span.textContent = text.substring(startIndex, endIndex);
-      fragment.appendChild(span);
-
-      lastIndex = endIndex;
-    });
-
-    // Add remaining text after the last match
-    if (lastIndex < text.length) {
-      fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+    // Temporarily disconnect observer to avoid triggering on our own changes
+    if (mutationObserver) {
+      mutationObserver.disconnect();
     }
 
-    // Replace the text node with the fragment
-    textNode.parentNode.replaceChild(fragment, textNode);
+    try {
+      // Create a document fragment to hold the new nodes
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
+
+      matches.forEach((emdashIndex) => {
+        // Calculate the range to highlight (5 chars before and after)
+        const startIndex = Math.max(0, emdashIndex - FADE_CHARS);
+        const endIndex = Math.min(text.length, emdashIndex + 1 + FADE_CHARS);
+
+        // Add text before the highlighted section
+        if (startIndex > lastIndex) {
+          fragment.appendChild(
+            document.createTextNode(text.substring(lastIndex, startIndex))
+          );
+        }
+
+        // Create span for the highlighted section
+        const span = document.createElement('span');
+        span.className = HIGHLIGHT_CLASS;
+        span.textContent = text.substring(startIndex, endIndex);
+        fragment.appendChild(span);
+
+        lastIndex = endIndex;
+      });
+
+      // Add remaining text after the last match
+      if (lastIndex < text.length) {
+        fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+      }
+
+      // Replace the text node with the fragment
+      textNode.parentNode.replaceChild(fragment, textNode);
+    } finally {
+      // Reconnect observer
+      if (mutationObserver) {
+        mutationObserver.observe(document.body, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+        });
+      }
+    }
   }
 
   /**
@@ -140,11 +166,18 @@
     scanForEmDashes(document.body);
 
     // Set up MutationObserver for dynamic content
-    const observer = new MutationObserver(function (mutations) {
+    mutationObserver = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
         // Process added nodes
         mutation.addedNodes.forEach(function (node) {
           if (node.nodeType === Node.ELEMENT_NODE) {
+            // Skip if it's a highlight span or inside one
+            if (
+              node.classList &&
+              node.classList.contains(HIGHLIGHT_CLASS)
+            ) {
+              return;
+            }
             // Scan the entire subtree of added element
             scanForEmDashes(node);
           } else if (node.nodeType === Node.TEXT_NODE) {
@@ -164,7 +197,7 @@
     });
 
     // Start observing the document for changes
-    observer.observe(document.body, {
+    mutationObserver.observe(document.body, {
       childList: true,
       subtree: true,
       characterData: true,
