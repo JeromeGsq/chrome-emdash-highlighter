@@ -1,35 +1,16 @@
 /* EMDash Highlighter Styles */
 
 .emdash-highlight {
-  position: relative;
   display: inline-block;
   padding: 2px 6px;
-  margin: 0 2px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+  border-radius: 3px;
   
-  /* Solid center with fade effect using box-shadow */
-  background: rgba(255, 77, 77, 0.35);
-  
-  /* Glow effect that creates the fade */
-  box-shadow: 
-    0 0 15px 8px rgba(255, 77, 77, 0.25),
-    0 0 8px 4px rgba(255, 77, 77, 0.3),
-    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  /* Solid red background */
+  background: rgba(255, 77, 77, 0.5);
 }
 
 /* Ensure text remains readable */
 .emdash-highlight {
   color: #fff;
   font-weight: 500;
-}
-
-/* Optional hover effect for interactivity */
-.emdash-highlight:hover {
-  background: rgba(255, 77, 77, 0.5);
-  box-shadow: 
-    0 0 20px 10px rgba(255, 77, 77, 0.35),
-    0 0 10px 5px rgba(255, 77, 77, 0.4),
-    inset 0 1px 2px rgba(255, 255, 255, 0.3);
-  transform: scale(1.05);
 }
