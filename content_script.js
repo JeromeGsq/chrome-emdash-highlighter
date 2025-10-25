@@ -1,11 +1,11 @@
 // EMDash Highlighter Content Script
-// Detects em-dashes (—) and applies a fade effect directly on them
+// Detects em-dashes (—) and en-dashes (–) and applies a fade effect directly on them
 
 (function () {
   'use strict';
 
-  // Em-dash detection pattern: U+2014 (—) only
-  const EMDASH_PATTERN = /\u2014/g;
+  // Em-dash and En-dash detection pattern: U+2014 (—) and U+2013 (–)
+  const EMDASH_PATTERN = /[\u2014\u2013]/g;
 
   // Class name to apply to highlighted spans
   const HIGHLIGHT_CLASS = 'emdash-highlight';

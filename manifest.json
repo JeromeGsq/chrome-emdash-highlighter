@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "EMDash Highlighter",
     "version": "1.0.0",
-    "description": "Highlights lines containing em-dashes (—) with a red background",
+    "description": "Highlights em-dashes (—) and en-dashes (–) with a red background",
     "content_scripts": [
         {
             "matches": [

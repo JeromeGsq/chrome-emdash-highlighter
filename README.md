@@ -1,6 +1,6 @@
 # EMDash Highlighter - Chrome Extension
 
-Extension Chrome qui surligne les lignes contenant des em-dashes (—) avec un effet de fade élégant.
+Extension Chrome qui surligne les em-dashes (—) et en-dashes (–) avec un effet de fade élégant.
 
 ## Installation
 
@@ -11,7 +11,7 @@ Extension Chrome qui surligne les lignes contenant des em-dashes (—) avec un e
 
 ## Fonctionnalités
 
-- Détecte automatiquement les em-dashes (—) uniquement
+- Détecte automatiquement les em-dashes (—) et en-dashes (–)
 - Applique un fond rouge avec effet glow uniquement sur l'em-dash
 - Conserve la couleur originale du texte
 - Effet de rayonnement horizontal (glow vertical réduit)
